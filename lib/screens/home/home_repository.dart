@@ -7,15 +7,19 @@ class HomeRepository {
   HomeRepository();
 
   // ProductModel products
-  Future<List<BlogModel>> getPoducts() async {
+  Future<List<BlogModel>> getBlogPost() async {
     try {
       final response = await httpMethods.commonApiGet("posts");
-      List<BlogModel> allBlogList = (response as List<dynamic>)
+      print('------------------> response at getPosts $response');
+      if (response is! List) {
+        throw Exception('Unexpected response type: ${response.runtimeType}');
+      }
+      List<BlogModel> allBlogList = (response)
           .map((json) => BlogModel.fromJson(json))
           .toList();
       return allBlogList;
     } catch (e) {
-      rethrow;
+      throw Exception('-----------> HomeRepository - getBlogPost failed: $e');
     }
   }
 }

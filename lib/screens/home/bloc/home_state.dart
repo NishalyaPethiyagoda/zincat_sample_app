@@ -9,5 +9,9 @@ class HomeLoadingState extends HomeState {}
 class HomeProductsLoadedState extends HomeState {
   final List<BlogModel> products;
   HomeProductsLoadedState(this.products);
-  // <Object> get props => [];
+}
+
+class HomeErrorState extends HomeState {
+  final String message;
+  HomeErrorState(this.message);
 }

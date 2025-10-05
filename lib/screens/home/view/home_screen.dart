@@ -19,19 +19,23 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   bool expandSearch = false;
   TextEditingController searchController = TextEditingController();
+  List<BlogModel> filteredProducts = [];
+  String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    // searchController.addListener(_onSearchChange);
+    searchController.addListener(_onSearchChange);
   }
 
-  // void _onSearchChange() {
-  //   Provider.of<ProductProvider>(
-  //     context,
-  //     listen: false,
-  //   ).filterProducts(searchController.text);
-  // }
+  void _onSearchChange() {
+    searchQuery = searchController.text;
+    setState(() {
+      filteredProducts = products.where((product) {
+        return product.title.toLowerCase().contains(searchQuery.toLowerCase());
+      }).toList();
+    });
+  }
 
   @override
   void dispose() {
@@ -50,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
             isLoading = true;
           } else if (state is HomeProductsLoadedState) {
             products = state.products;
+            filteredProducts = products;
             setState(() {
               isLoading = false;
             });
@@ -131,16 +136,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CircularProgressIndicator(color: Colors.grey),
                         )
                       : ListView.builder(
-                          itemCount: (products.length / 2).ceil(),
+                          itemCount: (filteredProducts.length / 2).ceil(),
                           itemBuilder: (context, index) {
                             int firstIndex = index * 2;
                             int secondIndex = firstIndex + 1;
 
-                            BlogModel leftProduct = products[firstIndex];
+                            BlogModel leftProduct = filteredProducts[firstIndex];
                             BlogModel? rightProduct =
-                                secondIndex < products.length
-                                ? products[secondIndex]
+                                secondIndex < filteredProducts.length
+                                ? filteredProducts[secondIndex]
                                 : null;
+                                
                             // Map title-length ratio to flex range 3..7
                             final int leftTitleLen = leftProduct.title.length;
                             final int rightTitleLen =

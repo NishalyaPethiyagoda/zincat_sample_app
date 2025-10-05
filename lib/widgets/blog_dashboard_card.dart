@@ -4,14 +4,18 @@ import 'package:zincat_sample_app/screens/blog_detail/view/blog_detail_screen.da
 
 class BlogDashboardCard extends StatelessWidget {
   final BlogModel product;
-  final Function onTap;
-  const BlogDashboardCard({super.key, required this.product, required this.onTap});
+  final VoidCallback? onTap;
+  const BlogDashboardCard({
+    super.key,
+    required this.product,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onTap();
+        if (onTap != null) onTap!();
         Navigator.push(
           context,
           PageRouteBuilder(
@@ -30,11 +34,10 @@ class BlogDashboardCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 8.0, 4, 8.0),
           child: Row(
             children: [
-              // Text content takes available horizontal space
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       product.title,
@@ -43,6 +46,7 @@ class BlogDashboardCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                       softWrap: true,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 6),
                     Text(
