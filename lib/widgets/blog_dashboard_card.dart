@@ -5,11 +5,7 @@ import 'package:zincat_sample_app/screens/blog_detail/view/blog_detail_screen.da
 class BlogDashboardCard extends StatelessWidget {
   final BlogModel product;
   final VoidCallback? onTap;
-  const BlogDashboardCard({
-    super.key,
-    required this.product,
-    this.onTap,
-  });
+  const BlogDashboardCard({super.key, required this.product, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,18 +16,16 @@ class BlogDashboardCard extends StatelessWidget {
           context,
           PageRouteBuilder(
             transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                BlogDetailScreen(blog: product),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
+            pageBuilder: (context, animation, secondaryAnimation) => BlogDetailScreen(blog: product),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
           ),
         );
       },
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(4, 8.0, 4, 8.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
           child: Row(
             children: [
               Expanded(
@@ -41,10 +35,7 @@ class BlogDashboardCard extends StatelessWidget {
                   children: [
                     Text(
                       product.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       softWrap: true,
                       textAlign: TextAlign.center,
                     ),

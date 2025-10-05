@@ -46,8 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
-      create: (BuildContext context) =>
-          HomeBloc(HomeRepository())..add(HomeGetProductsEvent()),
+      create: (BuildContext context) => HomeBloc(HomeRepository())..add(HomeGetProductsEvent()),
       child: BlocListener<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is HomeLoadingState) {
@@ -72,12 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: const Color.fromARGB(255, 10, 88, 199),
               centerTitle: expandSearch ? false : true,
               title: Text(
-                "Blogs",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white.withValues(alpha: 0.88),
-                ),
+                "BLOGS",
+                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w800),
               ),
               actions: [
                 expandSearch
@@ -91,9 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             controller: searchController,
                             decoration: InputDecoration(
                               hintText: 'Search Post by Title...',
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                               filled: true,
                               fillColor: Colors.white.withValues(alpha: 0.88),
                               border: OutlineInputBorder(
@@ -110,10 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             expandSearch = !expandSearch;
                           });
                         },
-                        icon: Icon(
-                          Icons.search,
-                          color: Colors.white.withValues(alpha: 0.88),
-                        ),
+                        icon: Icon(Icons.search, color: Colors.white.withValues(alpha: 0.88)),
                       ),
               ],
             ),
@@ -121,10 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 10, 88, 199),
-                      Color.fromARGB(255, 230, 244, 255),
-                    ],
+                    colors: [Color.fromARGB(255, 10, 88, 199), Color.fromARGB(255, 230, 244, 255)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -132,9 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(color: Colors.grey),
-                        )
+                      ? const Center(child: CircularProgressIndicator(color: Colors.white))
                       : ListView.builder(
                           itemCount: (filteredProducts.length / 2).ceil(),
                           itemBuilder: (context, index) {
@@ -142,22 +127,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             int secondIndex = firstIndex + 1;
 
                             BlogModel leftProduct = filteredProducts[firstIndex];
-                            BlogModel? rightProduct =
-                                secondIndex < filteredProducts.length
+                            BlogModel? rightProduct = secondIndex < filteredProducts.length
                                 ? filteredProducts[secondIndex]
                                 : null;
-                                
+
                             // Map title-length ratio to flex range 3..7
                             final int leftTitleLen = leftProduct.title.length;
-                            final int rightTitleLen =
-                                rightProduct?.title.length ?? 0;
+                            final int rightTitleLen = rightProduct?.title.length ?? 0;
 
                             // If no right product, show left product full width
                             if (rightProduct == null) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 6.0,
-                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 6.0),
                                 child: BlogDashboardCard(
                                   product: leftProduct,
                                   onTap: () {
@@ -170,9 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
 
                             final int totalTitle = leftTitleLen + rightTitleLen;
-                            final double ratio = totalTitle == 0
-                                ? 0.5
-                                : (leftTitleLen / totalTitle);
+                            final double ratio = totalTitle == 0 ? 0.5 : (leftTitleLen / totalTitle);
 
                             int leftFlex = (2 + (ratio * 6)).round();
                             if (leftFlex < 2) leftFlex = 2;
@@ -180,9 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             final int rightFlex = 10 - leftFlex;
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 6.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 6.0),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [

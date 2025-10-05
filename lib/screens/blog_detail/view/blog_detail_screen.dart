@@ -51,15 +51,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 backgroundColor: Color.fromARGB(255, 10, 88, 199),
                 centerTitle: true,
                 iconTheme: const IconThemeData(
-                  color: Colors.white, // Set the back button color to white
+                  color: Colors.white,
                 ),
-                // title: const Text(
-                //   "Blog Detail",
-                //   style: TextStyle(
-                //     color: Colors.white, // Set the title color to white
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
+                title: const Text(
+                  "BLOG DETAILS",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white, 
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
               body: SafeArea(
                 child: Container(
@@ -77,9 +78,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 30.0),
                               child: Text(
-                                textAlign: TextAlign.center,
                                 widget.blog.title,
-                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
                                 softWrap: true,
                                 overflow: TextOverflow.visible,
                                 maxLines: null,
@@ -109,7 +110,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                     ),
 
                                     Container(
-                                      height: 150,
+                                      height: 160,
                                       decoration: BoxDecoration(
                                         border: Border.all(color: Color.fromARGB(255, 54, 132, 241)),
                                         borderRadius: BorderRadius.circular(16.0),
