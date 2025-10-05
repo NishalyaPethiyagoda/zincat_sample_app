@@ -4,9 +4,13 @@ Future<void> showCustomPopup({
   required BuildContext context,
   required String titleText,
   required String text,
-  required String primaryButtonText,
+  String? primaryButtonText,
+  Color? primaryButtonColor,
+  Color? primaryButtonTextColor,
   String? secondaryButtonText,
-  required Function onPrimaryButtonPress,
+  Color? secondaryButtonColor,
+  Color? secondaryButtonTextColor,
+  Function? onPrimaryButtonPress,
   Function? onSecondaryButtonPress,
 }) async {
   return showDialog(
@@ -37,15 +41,19 @@ Future<void> showCustomPopup({
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      if(primaryButtonText != null)
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 10, 88, 199),
+                            color: primaryButtonColor ?? const Color.fromARGB(255, 10, 88, 199),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: TextButton(
-                            onPressed: () => onPrimaryButtonPress(),
-                            child: Text(primaryButtonText, style: const TextStyle(color: Colors.white)),
+                            onPressed: () {
+                              if(onPrimaryButtonPress != null)
+                              {onPrimaryButtonPress();}
+                            },
+                            child: Text(primaryButtonText, style: TextStyle(fontSize: 16, color: primaryButtonTextColor ?? Colors.white)),
                           ),
                         ),
                       ),
@@ -54,7 +62,7 @@ Future<void> showCustomPopup({
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: const Color.fromARGB(255, 175, 175, 175), width: 1),
-                              color: const Color.fromARGB(255, 230, 230, 230),
+                              color: secondaryButtonColor ?? const Color.fromARGB(255, 230, 230, 230),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: TextButton(
@@ -64,7 +72,7 @@ Future<void> showCustomPopup({
                                   onSecondaryButtonPress();
                                 }
                               },
-                              child: Text(secondaryButtonText, style: const TextStyle(color: Colors.black)),
+                              child: Text(secondaryButtonText, style: TextStyle(fontSize: 16, color: secondaryButtonTextColor ??Colors.black)),
                             ),
                           ),
                         ),

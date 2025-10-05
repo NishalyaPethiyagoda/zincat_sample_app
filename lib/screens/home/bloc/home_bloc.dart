@@ -11,11 +11,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeBloc(this.homeRepository) : super(HomeInitialState()) {
     on<HomeGetProductsEvent>((event, emit) async {
-      emit(HomeInitialState());
+      emit(HomeLoadingState());
 
       try {
         List<BlogModel> products = await homeRepository.getBlogPost();
-
         emit(HomeProductsLoadedState(products));
       } catch (e) {
         print('-----------------> home bloc- getBlogPost error:  $e');
