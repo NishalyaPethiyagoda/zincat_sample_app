@@ -6,6 +6,7 @@ import 'package:zincat_sample_app/screens/blog_detail/bloc/blog_detail_bloc.dart
 import 'package:zincat_sample_app/screens/blog_detail/bloc/blog_detail_event.dart';
 import 'package:zincat_sample_app/screens/blog_detail/bloc/blog_detail_state.dart';
 import 'package:zincat_sample_app/screens/blog_detail/blog_detail_repository.dart';
+import 'package:zincat_sample_app/widgets/custom_popup.dart';
 
 class BlogDetailScreen extends StatefulWidget {
   final BlogModel blog;
@@ -22,8 +23,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return BlocProvider<BlogDetailBloc>(
       create: (BuildContext context) =>
           BlogDetailBloc(BlogDetailRepository())..add(BlogDetailLoadEvent(widget.blog.id)),
@@ -42,6 +41,15 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             setState(() {
               isLoading = false;
             });
+            showCustomPopup(
+              context: context,
+              titleText: 'Error',
+              text: state.message,
+              primaryButtonText: 'Cancel',
+              onPrimaryButtonPress: () {
+                Navigator.of(context).pop();
+              },
+            );
           }
         },
         child: Stack(
@@ -50,16 +58,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
               appBar: AppBar(
                 backgroundColor: Color.fromARGB(255, 10, 88, 199),
                 centerTitle: true,
-                iconTheme: const IconThemeData(
-                  color: Colors.white,
-                ),
+                iconTheme: const IconThemeData(color: Colors.white),
                 title: const Text(
                   "BLOG DETAILS",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white, 
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w800),
                 ),
               ),
               body: SafeArea(
@@ -137,37 +139,55 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: ListView.builder(
-                                        itemBuilder: (context, index) {
-                                          return Container(
-                                            margin: const EdgeInsets.only(bottom: 12.0),
-                                            padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(255, 212, 236, 255),
-                                              borderRadius: BorderRadius.circular(16.0),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  comments[index].name,
-                                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  comments[index].body,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.black,
+                                      child: comments.isNotEmpty
+                                          ? ListView.builder(
+                                              itemBuilder: (context, index) {
+                                                return Container(
+                                                  margin: const EdgeInsets.only(bottom: 12.0),
+                                                  padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
+                                                  decoration: BoxDecoration(
+                                                    color: Color.fromARGB(255, 212, 236, 255),
+                                                    borderRadius: BorderRadius.circular(16.0),
                                                   ),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        comments[index].name,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        comments[index].body,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w400,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                              itemCount: comments.length,
+                                            )
+                                          : const Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.all(16.0),
+                                                child: Text(
+                                                  "No Comments Available. Refresh to Load again.",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black54,
+                                                  ),
+                                                  textAlign: TextAlign.center,
                                                 ),
-                                              ],
+                                              ),
                                             ),
-                                          );
-                                        },
-                                        itemCount: comments.length,
-                                      ),
                                     ),
                                   ],
                                 ),

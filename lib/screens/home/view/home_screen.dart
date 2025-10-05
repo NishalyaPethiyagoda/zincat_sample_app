@@ -6,6 +6,7 @@ import 'package:zincat_sample_app/screens/home/bloc/home_event.dart';
 import 'package:zincat_sample_app/screens/home/bloc/home_state.dart';
 import 'package:zincat_sample_app/screens/home/home_repository.dart';
 import 'package:zincat_sample_app/widgets/blog_dashboard_card.dart';
+import 'package:zincat_sample_app/widgets/custom_popup.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,6 +58,19 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               isLoading = false;
             });
+          } else if (state is HomeErrorState) {
+            setState(() {
+              isLoading = false;
+            });
+            showCustomPopup(
+              context: context,
+              titleText: 'Error',
+              text: state.message,
+              primaryButtonText: 'Cancel',
+              onPrimaryButtonPress: () {
+                Navigator.of(context).pop();
+              },
+            );
           }
         },
         child: GestureDetector(
@@ -120,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator(color: Colors.white))
-                      : ListView.builder(
+                      : filteredProducts.isNotEmpty
+                      ? ListView.builder(
                           itemCount: (filteredProducts.length / 2).ceil(),
                           itemBuilder: (context, index) {
                             int firstIndex = index * 2;
@@ -190,6 +205,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                           },
+                        )
+                      : const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              "No Blogs Available. Refresh to Load again.",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                 ),
               ),
