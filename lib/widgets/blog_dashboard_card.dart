@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zincat_sample_app/common/global_variables.dart';
 import 'package:zincat_sample_app/models/blog_model.dart';
-import 'package:zincat_sample_app/screens/blog_detail/view/blog_detail_screen.dart';
 
 class BlogDashboardCard extends StatelessWidget {
   final BlogModel product;
@@ -12,16 +12,7 @@ class BlogDashboardCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (onTap != null) onTap!();
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) => BlogDetailScreen(blog: product),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+        globalNavigatorKey.currentState?.pushNamed('/blogDetailScreen', arguments: {'blog': product});
       },
       child: Card(
         child: Padding(
