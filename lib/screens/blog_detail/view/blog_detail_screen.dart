@@ -18,6 +18,7 @@ class BlogDetailScreen extends StatefulWidget {
 class _BlogDetailScreenState extends State<BlogDetailScreen> {
   bool isNotExpanded = true;
   List<BlogCommentModel> comments = [];
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +30,18 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       child: BlocListener<BlogDetailBloc, BlogDetailState>(
         listener: (context, state) {
           if (state is BlogDetailLoading) {
+            setState(() {
+              isLoading = true;
+            });
           } else if (state is BlogDetailLoaded) {
             comments = state.comments;
+            setState(() {
+              isLoading = false;
+            });
           } else if (state is BlogDetailError) {
+            setState(() {
+              isLoading = false;
+            });
           }
         },
         child: Stack(
@@ -43,109 +53,127 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 iconTheme: const IconThemeData(
                   color: Colors.white, // Set the back button color to white
                 ),
-                title: const Text(
-                  "Blog Detail",
-                  style: TextStyle(
-                    color: Colors.white, // Set the title color to white
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                // title: const Text(
+                //   "Blog Detail",
+                //   style: TextStyle(
+                //     color: Colors.white, // Set the title color to white
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
               ),
               body: SafeArea(
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          height: screenHeight * 0.35,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color.fromARGB(255, 10, 88, 199), Color.fromARGB(255, 56, 181, 195)],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(24.0),
-                              bottomRight: Radius.circular(24.0),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(color: const Color.fromARGB(255, 230, 244, 255).withValues(alpha: 0.88)),
-                        ),
-                      ],
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color.fromARGB(255, 10, 88, 199), Color.fromARGB(255, 230, 244, 255)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(25.0, 10.0, 25.0, 0.0),
-                      child: Hero(
-                        tag: widget.blog.id,
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          widget.blog.title,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white.withValues(alpha: 0.88),
-                          ),
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                          maxLines: null,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 140,
-                      left: 25,
-                      right: 25,
-                      child: Container(
-                        padding: const EdgeInsets.all(2.0),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16.0)),
-                        child: Column(
+                  ),
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                      : Column(
                           children: [
-                            const Text(
-                              "Description",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                              textAlign: TextAlign.center,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                widget.blog.title,
+                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),
+                                softWrap: true,
+                                overflow: TextOverflow.visible,
+                                maxLines: null,
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            SingleChildScrollView(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    isNotExpanded = !isNotExpanded;
-                                  });
-                                },
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
+                                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 24.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
-                                      child: Text(
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black,
+                                    const SizedBox(
+                                      width: double.infinity,
+                                      child: Padding(
+                                        padding: EdgeInsets.fromLTRB(2.0, 0, 0.0, 8.0),
+                                        child: Text(
+                                          "Description",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                                         ),
-                                        widget.blog.body,
-                                        overflow: isNotExpanded ? TextOverflow.ellipsis : null,
-                                        maxLines: isNotExpanded ? 4 : null,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    isNotExpanded
-                                        ? const Text(
-                                            "Tap to view more",
-                                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                                          )
-                                        : Container(),
+
+                                    Container(
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Color.fromARGB(255, 54, 132, 241)),
+                                        borderRadius: BorderRadius.circular(16.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                                      child: SingleChildScrollView(
+                                        child: Text(
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                          widget.blog.body,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Padding(
+                                      padding: EdgeInsets.fromLTRB(2.0, 0, 0.0, 8.0),
+                                      child: Text(
+                                        "Comments",
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            margin: const EdgeInsets.only(bottom: 12.0),
+                                            padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(255, 212, 236, 255),
+                                              borderRadius: BorderRadius.circular(16.0),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  comments[index].name,
+                                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  comments[index].body,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        itemCount: comments.length,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
