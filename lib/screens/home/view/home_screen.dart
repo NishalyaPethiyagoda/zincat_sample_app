@@ -50,10 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
             isLoading = true;
           } else if (state is HomeProductsLoadedState) {
             products = state.products;
-            // Provider.of<ProductProvider>(
-            //   context,
-            //   listen: false,
-            // ).setProductItems(products);
             setState(() {
               isLoading = false;
             });
@@ -68,14 +64,14 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           child: Scaffold(
             appBar: AppBar(
-              backgroundColor: const Color.fromARGB(255, 251, 169, 128),
-              centerTitle: false,
+              backgroundColor: const Color.fromARGB(255, 10, 88, 199),
+              centerTitle: expandSearch ? false : true,
               title: Text(
-                "Posts",
+                "Blogs",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white.withOpacity(0.85),
+                  color: Colors.white.withValues(alpha: 0.88),
                 ),
               ),
               actions: [
@@ -83,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Padding(
                         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 12.0, 0.0),
                         child: SizedBox(
-                          width: 200,
+                          width: 230,
+                          height: 35,
                           child: TextField(
                             autofocus: false,
                             controller: searchController,
@@ -93,13 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 horizontal: 16.0,
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.85),
+                              fillColor: Colors.white.withValues(alpha: 0.88),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  25.0,
-                                ), // Adjust the radius as needed
-                                borderSide: BorderSide
-                                    .none, // Optional: to remove border color
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: BorderSide.none,
                               ),
                             ),
                           ),
@@ -111,7 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             expandSearch = !expandSearch;
                           });
                         },
-                        icon: const Icon(Icons.search),
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white.withValues(alpha: 0.88),
+                        ),
                       ),
               ],
             ),
@@ -120,8 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color.fromARGB(255, 251, 169, 128),
-                      Color.fromARGB(255, 251, 222, 208),
+                      Color.fromARGB(255, 10, 88, 199),
+                      Color.fromARGB(255, 230, 244, 255),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -144,21 +141,70 @@ class _HomeScreenState extends State<HomeScreen> {
                                 secondIndex < products.length
                                 ? products[secondIndex]
                                 : null;
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: BlogDashboardCard(
-                                    product: leftProduct,
-                                  ),
+                            // Map title-length ratio to flex range 3..7
+                            final int leftTitleLen = leftProduct.title.length;
+                            final int rightTitleLen =
+                                rightProduct?.title.length ?? 0;
+
+                            // If no right product, show left product full width
+                            if (rightProduct == null) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
                                 ),
-                                rightProduct != null
-                                    ? Expanded(
-                                        child: BlogDashboardCard(
-                                          product: rightProduct,
-                                        ),
-                                      )
-                                    : Container(),
-                              ],
+                                child: BlogDashboardCard(
+                                  product: leftProduct,
+                                  onTap: () {
+                                    setState(() {
+                                      FocusScope.of(context).unfocus();
+                                    });
+                                  },
+                                ),
+                              );
+                            }
+
+                            final int totalTitle = leftTitleLen + rightTitleLen;
+                            final double ratio = totalTitle == 0
+                                ? 0.5
+                                : (leftTitleLen / totalTitle);
+
+                            int leftFlex = (2 + (ratio * 6)).round();
+                            if (leftFlex < 2) leftFlex = 2;
+                            if (leftFlex > 8) leftFlex = 8;
+                            final int rightFlex = 10 - leftFlex;
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6.0,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: leftFlex,
+                                    child: BlogDashboardCard(
+                                      product: leftProduct,
+                                      onTap: () {
+                                        setState(() {
+                                          FocusScope.of(context).unfocus();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    flex: rightFlex,
+                                    child: BlogDashboardCard(
+                                      product: rightProduct,
+                                      onTap: () {
+                                        setState(() {
+                                          FocusScope.of(context).unfocus();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         ),

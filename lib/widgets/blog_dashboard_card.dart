@@ -4,12 +4,14 @@ import 'package:zincat_sample_app/screens/blog_detail/view/blog_detail_screen.da
 
 class BlogDashboardCard extends StatelessWidget {
   final BlogModel product;
-  const BlogDashboardCard({super.key, required this.product});
+  final Function onTap;
+  const BlogDashboardCard({super.key, required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        onTap();
         Navigator.push(
           context,
           PageRouteBuilder(
@@ -27,24 +29,30 @@ class BlogDashboardCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 8.0, 4, 8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Hero(
-                tag: product.id,
-                child: Expanded(
+              // Text content takes available horizontal space
+              Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       product.title,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      softWrap: true,
                     ),
-                    // Text('\$ ${product.price.toString()}'),
+                    const SizedBox(height: 6),
+                    Text(
+                      product.body,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14),
+                    ),
                   ],
                 ),
-              ),
               ),
             ],
           ),
