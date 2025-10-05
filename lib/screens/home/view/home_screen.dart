@@ -1,12 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zincat_sample_app/models/blog_model.dart';
 import 'package:zincat_sample_app/screens/home/bloc/home_bloc.dart';
 import 'package:zincat_sample_app/screens/home/bloc/home_event.dart';
 import 'package:zincat_sample_app/screens/home/bloc/home_state.dart';
-import 'package:zincat_sample_app/screens/home/home_repository.dart';
 import 'package:zincat_sample_app/widgets/blog_dashboard_card.dart';
 import 'package:zincat_sample_app/widgets/custom_popup.dart';
 
@@ -129,85 +126,98 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (state is HomeLoadingState) {
                       return Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 255, 255, 255)));
                     } else if (state is HomeProductsLoadedState) {
-                      return ListView.builder(
-                        itemCount: (filteredProducts.length / 2).ceil(),
-                        itemBuilder: (context, index) {
-                          int firstIndex = index * 2;
-                          int secondIndex = firstIndex + 1;
-
-                          BlogModel leftProduct = filteredProducts[firstIndex];
-                          BlogModel? rightProduct = secondIndex < filteredProducts.length
-                              ? filteredProducts[secondIndex]
-                              : null;
-
-                          // Map title-length ratio to flex range 3..7
-                          final int leftTitleLen = leftProduct.title.length;
-                          final int rightTitleLen = rightProduct?.title.length ?? 0;
-
-                          // If no right product, show left product full width
-                          if (rightProduct == null) {
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<HomeBloc>().add(HomeGetProductsEvent());
+                        },
+                        child: ListView.builder(
+                          itemCount: (filteredProducts.length / 2).ceil(),
+                          itemBuilder: (context, index) {
+                            int firstIndex = index * 2;
+                            int secondIndex = firstIndex + 1;
+                        
+                            BlogModel leftProduct = filteredProducts[firstIndex];
+                            BlogModel? rightProduct = secondIndex < filteredProducts.length
+                                ? filteredProducts[secondIndex]
+                                : null;
+                        
+                            // Map title-length ratio to flex range 3..7
+                            final int leftTitleLen = leftProduct.title.length;
+                            final int rightTitleLen = rightProduct?.title.length ?? 0;
+                        
+                            // If no right product, show left product full width
+                            if (rightProduct == null) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                child: BlogDashboardCard(
+                                  blogPost: leftProduct,
+                                  onTap: () {
+                                    setState(() {
+                                      FocusScope.of(context).unfocus();
+                                    });
+                                  },
+                                ),
+                              );
+                            }
+                        
+                            final int totalTitle = leftTitleLen + rightTitleLen;
+                            final double ratio = totalTitle == 0 ? 0.5 : (leftTitleLen / totalTitle);
+                        
+                            int leftFlex = (2 + (ratio * 6)).round();
+                            if (leftFlex < 2) leftFlex = 2;
+                            if (leftFlex > 8) leftFlex = 8;
+                            final int rightFlex = 10 - leftFlex;
+                        
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 6.0),
-                              child: BlogDashboardCard(
-                                blogPost: leftProduct,
-                                onTap: () {
-                                  setState(() {
-                                    FocusScope.of(context).unfocus();
-                                  });
-                                },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: leftFlex,
+                                    child: BlogDashboardCard(
+                                      blogPost: leftProduct,
+                                      onTap: () {
+                                        setState(() {
+                                          FocusScope.of(context).unfocus();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    flex: rightFlex,
+                                    child: BlogDashboardCard(
+                                      blogPost: rightProduct,
+                                      onTap: () {
+                                        setState(() {
+                                          FocusScope.of(context).unfocus();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
-                          }
-
-                          final int totalTitle = leftTitleLen + rightTitleLen;
-                          final double ratio = totalTitle == 0 ? 0.5 : (leftTitleLen / totalTitle);
-
-                          int leftFlex = (2 + (ratio * 6)).round();
-                          if (leftFlex < 2) leftFlex = 2;
-                          if (leftFlex > 8) leftFlex = 8;
-                          final int rightFlex = 10 - leftFlex;
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: leftFlex,
-                                  child: BlogDashboardCard(
-                                    blogPost: leftProduct,
-                                    onTap: () {
-                                      setState(() {
-                                        FocusScope.of(context).unfocus();
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  flex: rightFlex,
-                                  child: BlogDashboardCard(
-                                    blogPost: rightProduct,
-                                    onTap: () {
-                                      setState(() {
-                                        FocusScope.of(context).unfocus();
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                          },
+                        ),
                       );
                     } else {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            "No Blogs Available. Refresh to Load again.",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                            textAlign: TextAlign.center,
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<HomeBloc>().add(HomeGetProductsEvent());
+                        },
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "No Blogs Available. Refresh to Load again.",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                         ),
                       );
